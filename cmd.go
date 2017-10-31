@@ -52,7 +52,7 @@ func Launch(progName string) (MsgChan, error) {
 	}
 
 	cmd := exec.Command(os.Args[0], progName)
-	cmd.ExtraFiles = append(cmd.ExtraFiles, fds[1])
+	cmd.ExtraFiles = append(cmd.ExtraFiles, os.NewFile(uintptr(fds[1]), "<child>"))
 	err = cmd.Start()
 	if err != nil {
 		// ignore close(2) errors on purpose here
@@ -61,5 +61,5 @@ func Launch(progName string) (MsgChan, error) {
 		return nil, err
 	}
 
-	return msgChanFromFd(fds[0])
+	return msgChanFromFd(uintptr(fds[0]))
 }
